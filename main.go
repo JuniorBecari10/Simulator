@@ -7,30 +7,37 @@ import (
 )
 
 const (
-    windowWidth int = 640
-    windowHeight int = 480
+    windowWidth int = 740
+    windowHeight int = 580
     
     itemsLength int = 6
-    itemSize float64 = 
+    itemSize int = 20
     
     typeStone int = 1
 )
 
 var (
-    stonePallete PalleteItem
+    //stonePallete PalleteItem
+    palleteItems []PalleteItem
 )
 
 type Game struct {}
 
 type PalleteItem struct {
-    x, y     float64
-    w, h     float64
+    x, y     int
+    w, h     int
     itemType int
     sprite   *ebiten.Image
 }
 
 func init() {
-    stonePallete = PalleteItem {  }
+    palleteItems = make([]PalleteItem, itemsLength)
+    
+    xinit := (windowWidth / 2) - ((itemsLength / 2) * itemSize)
+    
+    for i := 0; i < itemsLength; i++ {
+        palleteItems[i] = PalleteItem { xinit + (itemSize * i), windowHeight - itemSize - 5, itemSize, itemSize, i, nil }
+    }
 }
 
 func (g *Game) Update() error {
@@ -38,7 +45,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-    
+    // Draw Pallete Menu
 }
 
 func (g *Game) Layout(ow, oh int) (w, h int) {
