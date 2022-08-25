@@ -3,8 +3,11 @@ package main
 import (
     "log"
     "image/color"
+    _ "image/png"
+    "image"
     
     "github.com/hajimehoshi/ebiten/v2"
+    "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -22,6 +25,7 @@ const (
 
 var (
     paletteItems []PaletteItem
+    spritesheet *ebiten.Image
 )
 
 type Game struct {}
@@ -33,13 +37,24 @@ type PaletteItem struct {
     sprite   *ebiten.Image
 }
 
+func (p *PalleteItem) Render(screen *ebiten.Image) {
+    
+}
+
 func init() {
     paletteItems = make([]PaletteItem, itemsLength)
+    
+    var err error
+    spritesheet, _, err = ebitenutil.NewImageFromFile("paletteitems.png")
+    
+    if err != nil {
+        log.Fatal(err)
+    }
     
     xinit := (windowWidth / 2) - ((itemsLength / 2) * itemSize)
     
     for i := 0; i < itemsLength; i++ {
-        paletteItems[i] = PaletteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, itemSize, itemSize, i, nil }
+        paletteItems[i] = PaletteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, itemSize, itemSize, i, spritesheet.SubImage(image.Rect(i * 16, 0, 16, 16)).(*ebiten.Image) }
     }
 }
 
