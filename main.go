@@ -9,12 +9,28 @@ import (
 const (
     windowWidth int = 640
     windowHeight int = 480
+    
+    itemsLength int = 6
+    itemSize float64 = 
+    
+    typeStone int = 1
+)
+
+var (
+    stonePallete PalleteItem
 )
 
 type Game struct {}
 
+type PalleteItem struct {
+    x, y     float64
+    w, h     float64
+    itemType int
+    sprite   *ebiten.Image
+}
+
 func init() {
-    
+    stonePallete = PalleteItem {  }
 }
 
 func (g *Game) Update() error {

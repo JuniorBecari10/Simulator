@@ -1,0 +1,5 @@
+stone
+wood
+sand
+water
+lava
