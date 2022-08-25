@@ -50,7 +50,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
     // Draw Palette Menu
     image := ebiten.NewImage(windowWidth, paletteHeight)
-    image.Fill(color.White)
+    image.Fill(color.RGBA{0, 48, 73, 255})
     op := &ebiten.DrawImageOptions{}
     op.GeoM.Translate(0, float64(windowHeight - paletteHeight))
     
