@@ -13,7 +13,7 @@ const (
     
     itemsLength int = 6
     itemSize int = 48 // image 16
-    palleteHeight int = itemSize + 4
+    paletteHeight int = itemSize + 4
     
     typeStone int = 0
     typeWood int = 1
@@ -21,12 +21,12 @@ const (
 )
 
 var (
-    palleteItems []PalleteItem
+    paletteItems []PaletteItem
 )
 
 type Game struct {}
 
-type PalleteItem struct {
+type PaletteItem struct {
     x, y     int
     w, h     int
     itemType int
@@ -34,12 +34,12 @@ type PalleteItem struct {
 }
 
 func init() {
-    palleteItems = make([]PalleteItem, itemsLength)
+    paletteItems = make([]PaletteItem, itemsLength)
     
     xinit := (windowWidth / 2) - ((itemsLength / 2) * itemSize)
     
     for i := 0; i < itemsLength; i++ {
-        palleteItems[i] = PalleteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, itemSize, itemSize, i, nil }
+        paletteItems[i] = PaletteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, itemSize, itemSize, i, nil }
     }
 }
 
@@ -48,11 +48,11 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-    // Draw Pallete Menu
-    image := ebiten.NewImage(windowWidth, palleteHeight)
+    // Draw Palette Menu
+    image := ebiten.NewImage(windowWidth, paletteHeight)
     image.Fill(color.White)
     op := &ebiten.DrawImageOptions{}
-    op.GeoM.Translate(0, float64(windowHeight - palleteHeight))
+    op.GeoM.Translate(0, float64(windowHeight - paletteHeight))
     
     screen.DrawImage(image, op)
 }
