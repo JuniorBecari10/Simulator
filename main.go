@@ -11,7 +11,7 @@ const (
     windowHeight int = 580
     
     itemsLength int = 6
-    itemSize int = 20
+    itemSize int = 16
     
     typeStone int = 1
 )
