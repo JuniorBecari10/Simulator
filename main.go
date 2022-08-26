@@ -5,7 +5,7 @@ import (
     "image/color"
     _ "image/png"
     "image"
-    "fmt"
+    //"fmt"
     
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -27,6 +27,8 @@ const (
 var (
     paletteItems []PaletteItem
     spritesheet *ebiten.Image
+    
+    selected *PalleteItem
 )
 
 type Game struct {}
@@ -43,11 +45,21 @@ type PaletteItem struct {
 }
 
 func (p *PaletteItem) Tick() {
-    
+    //if ()
 }
 
 func (p *PaletteItem) Render(screen *ebiten.Image) {
     op := &ebiten.DrawImageOptions{}
+    
+    if p.Hovered() {
+        bg := ebiten.NewImage(itemSize, itemSize)
+        bg.Fill(color.RGBA{0, 61, 94, 255})
+        op.GeoM.Translate(float64(p.x), float64(p.y))
+        screen.DrawImage(bg, op)
+    }
+    
+    op = &ebiten.DrawImageOptions{}
+    
     op.GeoM.Scale(3, 3)
     op.GeoM.Translate(float64(p.x), float64(p.y))
     screen.DrawImage(p.sprite, op)
@@ -87,7 +99,6 @@ func init() {
                                         windowHeight - itemSize - 2,
                                         i,
                                         spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
-        fmt.Println(paletteItems[i].sprite.Bounds())
     }
 }
 
