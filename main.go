@@ -5,7 +5,7 @@ import (
     "image/color"
     _ "image/png"
     "image"
-    "fmt"
+    //"fmt"
     
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -111,8 +111,6 @@ func (g *Game) Update() error {
     for _, v := range paletteItems {
         v.Tick()
     }
-    
-    fmt.Println(selected)
     
     return nil
 }
