@@ -15,7 +15,7 @@ const (
     windowWidth int = 740
     windowHeight int = 580
     
-    itemsLength int = 6 // 6
+    itemsLength int = 3 // 6
     itemSize int = 48 // image 16
     paletteHeight int = itemSize + 4
     
