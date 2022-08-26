@@ -15,7 +15,7 @@ const (
     windowWidth int = 740
     windowHeight int = 580
     
-    itemsLength int = 3 // 6
+    itemsLength int = 6 // 6
     itemSize int = 48 // image 16
     paletteHeight int = itemSize + 4
     
@@ -43,9 +43,7 @@ type PaletteItem struct {
 }
 
 func (p *PaletteItem) Tick() {
-    if p.Hovered() {
-        fmt.Println("a")
-    }
+    
 }
 
 func (p *PaletteItem) Render(screen *ebiten.Image) {
@@ -85,7 +83,11 @@ func init() {
     xinit := (windowWidth / 2) - ((itemsLength / 2) * itemSize)
     
     for i := 0; i < itemsLength; i++ {
-        paletteItems[i] = PaletteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, i, spritesheet.SubImage(image.Rect(i * 16, 0, 16, 16)).(*ebiten.Image) }
+        paletteItems[i] = PaletteItem { xinit + (itemSize * i),
+                                        windowHeight - itemSize - 2,
+                                        i,
+                                        spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
+        fmt.Println(paletteItems[i].sprite.Bounds())
     }
 }
 
