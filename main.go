@@ -25,10 +25,10 @@ const (
 )
 
 var (
-    paletteItems []PaletteItem
+    paletteItems [itemsLength]PaletteItem
     spritesheet *ebiten.Image
     
-    selected *PaletteItem
+    selected int
 )
 
 type Game struct {}
@@ -46,14 +46,14 @@ type PaletteItem struct {
 
 func (p *PaletteItem) Tick() {
     if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && p.Hovered() {
-        selected = p
+        selected = p.itemType
     }
 }
 
 func (p *PaletteItem) Render(screen *ebiten.Image) {
     op := &ebiten.DrawImageOptions{}
     
-    if selected == p {
+    if selected == p.itemType {
         bg := ebiten.NewImage(itemSize, itemSize)
         bg.Fill(color.RGBA{255, 255, 255, 255})
         op.GeoM.Translate(float64(p.x), float64(p.y))
@@ -90,8 +90,6 @@ func Collide(r1 Rectangle, r2 Rectangle) bool {
 }
 
 func init() {
-    paletteItems = make([]PaletteItem, itemsLength)
-    
     var err error
     spritesheet, _, err = ebitenutil.NewImageFromFile("paletteitems.png")
     
