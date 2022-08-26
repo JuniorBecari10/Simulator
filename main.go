@@ -5,6 +5,7 @@ import (
     "image/color"
     _ "image/png"
     "image"
+    "fmt"
     
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -14,7 +15,7 @@ const (
     windowWidth int = 740
     windowHeight int = 580
     
-    itemsLength int = 6
+    itemsLength int = 3 // 6
     itemSize int = 48 // image 16
     paletteHeight int = itemSize + 4
     
@@ -30,15 +31,45 @@ var (
 
 type Game struct {}
 
+type Rectangle struct {
+    x, y int
+    w, h int
+}
+
 type PaletteItem struct {
     x, y     int
-    w, h     int
     itemType int
     sprite   *ebiten.Image
 }
 
-func (p *PalleteItem) Render(screen *ebiten.Image) {
+func (p *PaletteItem) Tick() {
+    if p.Hovered() {
+        fmt.Println("a")
+    }
+}
+
+func (p *PaletteItem) Render(screen *ebiten.Image) {
+    op := &ebiten.DrawImageOptions{}
+    op.GeoM.Scale(3, 3)
+    op.GeoM.Translate(float64(p.x), float64(p.y))
+    screen.DrawImage(p.sprite, op)
+}
+
+func (p *PaletteItem) GetRectangle() Rectangle {
+    return Rectangle { p.x, p.y, itemSize, itemSize }
+}
+
+func (p *PaletteItem) Hovered() bool {
+    mx, my := ebiten.CursorPosition()
     
+    return Collide(p.GetRectangle(), Rectangle { mx, my, 1, 1 })
+}
+
+func Collide(r1 Rectangle, r2 Rectangle) bool {
+    return r1.x < r2.x + r2.w &&
+           r1.x + r1.w > r2.x &&
+           r1.y < r2.y + r2.h &&
+           r1.y + r1.h > r2.y
 }
 
 func init() {
@@ -54,11 +85,15 @@ func init() {
     xinit := (windowWidth / 2) - ((itemsLength / 2) * itemSize)
     
     for i := 0; i < itemsLength; i++ {
-        paletteItems[i] = PaletteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, itemSize, itemSize, i, spritesheet.SubImage(image.Rect(i * 16, 0, 16, 16)).(*ebiten.Image) }
+        paletteItems[i] = PaletteItem { xinit + (itemSize * i), windowHeight - itemSize - 2, i, spritesheet.SubImage(image.Rect(i * 16, 0, 16, 16)).(*ebiten.Image) }
     }
 }
 
 func (g *Game) Update() error {
+    for _, v := range paletteItems {
+        v.Tick()
+    }
+    
     return nil
 }
 
@@ -70,6 +105,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
     op.GeoM.Translate(0, float64(windowHeight - paletteHeight))
     
     screen.DrawImage(image, op)
+    
+    for _, v := range paletteItems {
+        v.Render(screen)
+    }
 }
 
 func (g *Game) Layout(ow, oh int) (w, h int) {
