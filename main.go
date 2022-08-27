@@ -121,7 +121,7 @@ func init() {
     
     for i := 0; i < itemsLength; i++ {
         paletteItems[i] = PaletteItem { xinit + ((itemSize + itemMargin) * i),
-                                        windowHeight - itemSize - 2,
+                                        (windowHeight - paletteHeight) + (itemSize / 4),
                                         i,
                                         spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
     }
@@ -138,6 +138,12 @@ func (g *Game) Update() error {
         bx := int(math.Round(float64(mx / blockSize))) * blockSize
         by := int(math.Round(float64(my / blockSize))) * blockSize
         newblock := Block { bx, by, selected, spritesheet.SubImage(image.Rect(selected * 16, 16, (selected * 16) + 16, 32)).(*ebiten.Image)}
+        
+        for _, v := range blocks {
+            if v.x == bx && v.y == by {
+                return nil
+            }
+        }
         
         blocks = append(blocks, newblock)
     }
