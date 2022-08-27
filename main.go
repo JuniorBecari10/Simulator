@@ -27,10 +27,11 @@ const (
     typeStone int = 0
     typeWood int = 1
     typeSand int = 2
+    typeWater int = 3
 )
 
 var (
-    //paletteItemCaptions [itemsLength]string = [itemsLength]string { "Stone", "Wood", "Sand" }
+    paletteItemCaptions [itemsLength]string = [itemsLength]string { "Stone", "Wood", "Sand", "Water" }
     
     paletteItems [itemsLength]PaletteItem
     spritesheet *ebiten.Image
@@ -56,7 +57,7 @@ type Rectangle struct {
 type PaletteItem struct {
     x, y     int
     itemType int
-    //caption string
+    caption string
     sprite   *ebiten.Image
 }
 
@@ -69,7 +70,7 @@ type Block struct {
 type Button struct {
     x, y int
     action func()
-    //caption string
+    caption string
     sprite *ebiten.Image
 }
 
@@ -91,6 +92,23 @@ func (b *Block) Tick() {
                 b.x -= blockSize
                 b.y += blockSize
             }
+            
+            break
+        case typeWater:
+            if !ThereIsBlock(b.x, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
+                b.y += blockSize
+            } else if !ThereIsBlock(b.x + blockSize, b.y) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth {
+                b.x += blockSize
+            } else if !ThereIsBlock(b.x - blockSize, b.y) && b.y < windowHeight - paletteHeight - blockSize && b.x > 0 {
+                b.y -= blockSize
+            }
+            /* else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth && !ThereIsBlock(b.x + blockSize, b.y) {
+                b.x += blockSize
+                b.y += blockSize
+            } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x > 0 && !ThereIsBlock(b.x - blockSize, b.y) {
+                b.x -= blockSize
+                b.y += blockSize
+            }*/
             
             break
     }
@@ -208,7 +226,7 @@ func init() {
         paletteItems[i] = PaletteItem { xinit + ((itemSize + itemMargin) * i),
                                         (windowHeight - paletteHeight) + (itemSize / 4),
                                         i,
-                                        //paletteItemCaptions[i],
+                                        paletteItemCaptions[i],
                                         spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
     }
     
@@ -217,7 +235,7 @@ func init() {
                      func() {
                          blocks = make([]Block, 0)
                      },
-                     //"Clear",
+                     "Clear",
                      spritesheet.SubImage(image.Rect(0, 32, 16, 48)).(*ebiten.Image) }
     
     buttons = append(buttons, clear)
@@ -272,12 +290,26 @@ func (g *Game) Draw(screen *ebiten.Image) {
         v.Render(screen)
     }
     
+    for _, v := range paletteItems {
+        if v.Hovered() {
+            mx, my := ebiten.CursorPosition()
+            ebitenutil.DebugPrintAt(screen, v.caption, mx + 20, my)
+        }
+    }
+    
     for _, b := range blocks {
         b.Render(screen)
     }
     
     for _, b := range buttons {
         b.Render(screen)
+    }
+    
+    for _, b := range buttons {
+        if b.Hovered() {
+            mx, my := ebiten.CursorPosition()
+            ebitenutil.DebugPrintAt(screen, b.caption, mx + 20, my)
+        }
     }
 }
 
