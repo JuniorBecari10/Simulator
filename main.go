@@ -18,7 +18,7 @@ const (
     
     itemsLength int = 3 // 6
     itemSize int = 48 // image 16
-    paletteHeight int = itemSize + 4
+    paletteHeight int = itemSize + 16 + 4
     itemMargin int = 5
     
     blockSize int = 32 // scale 2
@@ -109,7 +109,7 @@ func Collide(r1 Rectangle, r2 Rectangle) bool {
 
 func init() {
     var err error
-    spritesheet, _, err = ebitenutil.NewImageFromFile("paletteitems.png")
+    spritesheet, _, err = ebitenutil.NewImageFromFile("sprites.png")
     
     blocks = make([]Block, 0)
     
@@ -137,7 +137,7 @@ func (g *Game) Update() error {
     if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && my < windowHeight - paletteHeight {
         bx := int(math.Round(float64(mx / blockSize))) * blockSize
         by := int(math.Round(float64(my / blockSize))) * blockSize
-        newblock := Block { bx, by, selected, paletteItems[selected].sprite }
+        newblock := Block { bx, by, selected, spritesheet.SubImage(image.Rect(selected * 16, 16, (selected * 16) + 16, 32)).(*ebiten.Image)}
         
         blocks = append(blocks, newblock)
     }
