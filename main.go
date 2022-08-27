@@ -18,6 +18,7 @@ const (
     itemsLength int = 3 // 6
     itemSize int = 48 // image 16
     paletteHeight int = itemSize + 4
+    itemMargin int = 5
     
     typeStone int = 0
     typeWood int = 1
@@ -97,10 +98,10 @@ func init() {
         log.Fatal(err)
     }
     
-    xinit := (windowWidth / 2) - ((itemsLength / 2) * itemSize)
+    xinit := (windowWidth / 2) - ((itemsLength / 2) * (itemSize + itemMargin))
     
     for i := 0; i < itemsLength; i++ {
-        paletteItems[i] = PaletteItem { xinit + (itemSize * i),
+        paletteItems[i] = PaletteItem { xinit + ((itemSize + itemMargin) * i),
                                         windowHeight - itemSize - 2,
                                         i,
                                         spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
