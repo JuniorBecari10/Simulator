@@ -13,7 +13,7 @@ import (
 )
 
 const (
-    windowWidth int = 740
+    windowWidth int = 640
     windowHeight int = 580
     
     itemsLength int = 3 // 6
@@ -22,6 +22,7 @@ const (
     itemMargin int = 5
     
     blockSize int = 32 // scale 2
+    blockTickSpeed int = 5
     
     typeStone int = 0
     typeWood int = 1
@@ -32,6 +33,8 @@ var (
     paletteItems [itemsLength]PaletteItem
     spritesheet *ebiten.Image
     blocks []Block
+    
+    blockTickCount int = 0
     
     selected int
 )
@@ -58,6 +61,23 @@ type Block struct {
 func (p *PaletteItem) Tick() {
     if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && p.Hovered() {
         selected = p.itemType
+    }
+}
+
+func (b *Block) Tick() {
+    switch b.blockType {
+        case typeSand:
+            if !ThereIsBlock(b.x, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
+                b.y += blockSize
+            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
+                b.x += blockSize
+                b.y += blockSize
+            } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
+                b.x -= blockSize
+                b.y += blockSize
+            }
+            
+            break
     }
 }
 
@@ -107,6 +127,16 @@ func Collide(r1 Rectangle, r2 Rectangle) bool {
            r1.y + r1.h > r2.y
 }
 
+func ThereIsBlock(x, y int) bool {
+    for _, v := range blocks {
+        if v.x == x && v.y == y {
+            return true
+        }
+    }
+    
+    return false
+}
+
 func init() {
     var err error
     spritesheet, _, err = ebitenutil.NewImageFromFile("sprites.png")
@@ -132,6 +162,16 @@ func (g *Game) Update() error {
         v.Tick()
     }
     
+    blockTickCount++
+    
+    if blockTickCount >= blockTickSpeed {
+        blockTickCount = 0
+        
+        for i := range blocks {
+            blocks[i].Tick()
+        }
+    }
+    
     mx, my := ebiten.CursorPosition()
     
     if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && my < windowHeight - paletteHeight {
@@ -139,10 +179,8 @@ func (g *Game) Update() error {
         by := int(math.Round(float64(my / blockSize))) * blockSize
         newblock := Block { bx, by, selected, spritesheet.SubImage(image.Rect(selected * 16, 16, (selected * 16) + 16, 32)).(*ebiten.Image)}
         
-        for _, v := range blocks {
-            if v.x == bx && v.y == by {
-                return nil
-            }
+        if ThereIsBlock(bx, by) {
+            return nil
         }
         
         blocks = append(blocks, newblock)
