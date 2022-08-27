@@ -30,6 +30,8 @@ const (
 )
 
 var (
+    paletteItemCaptions [itemsLength]string = [itemsLength]string { "Stone", "Wood", "Sand" }
+    
     paletteItems [itemsLength]PaletteItem
     spritesheet *ebiten.Image
     blocks []Block
@@ -54,6 +56,7 @@ type Rectangle struct {
 type PaletteItem struct {
     x, y     int
     itemType int
+    caption string
     sprite   *ebiten.Image
 }
 
@@ -66,6 +69,7 @@ type Block struct {
 type Button struct {
     x, y int
     action func()
+    caption string
     sprite *ebiten.Image
 }
 
@@ -204,6 +208,7 @@ func init() {
         paletteItems[i] = PaletteItem { xinit + ((itemSize + itemMargin) * i),
                                         (windowHeight - paletteHeight) + (itemSize / 4),
                                         i,
+                                        paletteItemCaptions[i],
                                         spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
     }
     
@@ -212,6 +217,7 @@ func init() {
                      func() {
                          blocks = make([]Block, 0)
                      },
+                     "Clear",
                      spritesheet.SubImage(image.Rect(0, 32, 16, 48)).(*ebiten.Image) }
     
     buttons = append(buttons, clear)
