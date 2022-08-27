@@ -5,6 +5,7 @@ import (
     "image/color"
     _ "image/png"
     "image"
+    "math"
     //"fmt"
     
     "github.com/hajimehoshi/ebiten/v2"
@@ -20,6 +21,8 @@ const (
     paletteHeight int = itemSize + 4
     itemMargin int = 5
     
+    blockSize int = 32 // scale 2
+    
     typeStone int = 0
     typeWood int = 1
     typeSand int = 2
@@ -28,6 +31,7 @@ const (
 var (
     paletteItems [itemsLength]PaletteItem
     spritesheet *ebiten.Image
+    blocks []Block
     
     selected int
 )
@@ -43,6 +47,12 @@ type PaletteItem struct {
     x, y     int
     itemType int
     sprite   *ebiten.Image
+}
+
+type Block struct {
+    x, y int
+    blockType int
+    sprite *ebiten.Image
 }
 
 func (p *PaletteItem) Tick() {
@@ -73,6 +83,13 @@ func (p *PaletteItem) Render(screen *ebiten.Image) {
     screen.DrawImage(p.sprite, op)
 }
 
+func (b *Block) Render(screen *ebiten.Image) {
+    op := &ebiten.DrawImageOptions{}
+    op.GeoM.Scale(2, 2)
+    op.GeoM.Translate(float64(b.x), float64(b.y))
+    screen.DrawImage(b.sprite, op)
+}
+
 func (p *PaletteItem) GetRectangle() Rectangle {
     return Rectangle { p.x, p.y, itemSize, itemSize }
 }
@@ -94,6 +111,8 @@ func init() {
     var err error
     spritesheet, _, err = ebitenutil.NewImageFromFile("paletteitems.png")
     
+    blocks = make([]Block, 0)
+    
     if err != nil {
         log.Fatal(err)
     }
@@ -113,6 +132,16 @@ func (g *Game) Update() error {
         v.Tick()
     }
     
+    mx, my := ebiten.CursorPosition()
+    
+    if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && my < windowHeight - paletteHeight {
+        bx := int(math.Round(float64(mx / blockSize))) * blockSize
+        by := int(math.Round(float64(my / blockSize))) * blockSize
+        newblock := Block { bx, by, selected, paletteItems[selected].sprite }
+        
+        blocks = append(blocks, newblock)
+    }
+    
     return nil
 }
 
@@ -127,6 +156,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
     
     for _, v := range paletteItems {
         v.Render(screen)
+    }
+    
+    for _, b := range blocks {
+        b.Render(screen)
     }
 }
 
