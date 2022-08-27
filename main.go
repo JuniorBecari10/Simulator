@@ -34,6 +34,11 @@ var (
     spritesheet *ebiten.Image
     blocks []Block
     
+    clear Button
+    eraser Button
+    
+    buttons []Button
+    
     blockTickCount int = 0
     
     selected int
@@ -55,6 +60,12 @@ type PaletteItem struct {
 type Block struct {
     x, y int
     blockType int
+    sprite *ebiten.Image
+}
+
+type Button struct {
+    x, y int
+    action func()
     sprite *ebiten.Image
 }
 
@@ -155,6 +166,14 @@ func init() {
                                         i,
                                         spritesheet.SubImage(image.Rect(i * 16, 0, (i * 16) + 16, 16)).(*ebiten.Image) }
     }
+    
+    clear = Button { 10,
+                     (windowHeight - paletteHeight) + (itemSize / 4),
+                     func() {
+                         blocks = make([]Block, 0)
+                     },
+                     spritesheet.SubImage(image.Rect(0, 32, 16, 48))
+                   }
 }
 
 func (g *Game) Update() error {
