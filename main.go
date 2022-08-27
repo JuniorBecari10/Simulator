@@ -92,18 +92,48 @@ func (b *Block) Tick() {
     }
 }
 
+func (b *Button) Tick() {
+    if b.Hovered() && ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+        b.action()
+    }
+}
+
+
+func (b *Button) Render(screen *ebiten.Image) {
+    op := &ebiten.DrawImageOptions{}
+
+    if b.Hovered() {
+        bg := ebiten.NewImage(itemSize, itemSize)
+        bg.Fill(color.RGBA{0, 61, 94, 255})
+        
+        op.GeoM.Translate(float64(b.x), float64(b.y))
+        
+        screen.DrawImage(bg, op)
+    }
+    
+    op = &ebiten.DrawImageOptions{}
+    
+    op.GeoM.Scale(3, 3)
+    op.GeoM.Translate(float64(b.x), float64(b.y))
+    screen.DrawImage(b.sprite, op)
+}
+
 func (p *PaletteItem) Render(screen *ebiten.Image) {
     op := &ebiten.DrawImageOptions{}
     
     if selected == p.itemType {
         bg := ebiten.NewImage(itemSize, itemSize)
         bg.Fill(color.RGBA{255, 255, 255, 255})
+        
         op.GeoM.Translate(float64(p.x), float64(p.y))
+        
         screen.DrawImage(bg, op)
     } else if p.Hovered() {
         bg := ebiten.NewImage(itemSize, itemSize)
         bg.Fill(color.RGBA{0, 61, 94, 255})
+        
         op.GeoM.Translate(float64(p.x), float64(p.y))
+        
         screen.DrawImage(bg, op)
     }
     
@@ -125,10 +155,20 @@ func (p *PaletteItem) GetRectangle() Rectangle {
     return Rectangle { p.x, p.y, itemSize, itemSize }
 }
 
+func (b *Button) GetRectangle() Rectangle {
+    return Rectangle { b.x, b.y, itemSize, itemSize }
+}
+
 func (p *PaletteItem) Hovered() bool {
     mx, my := ebiten.CursorPosition()
     
     return Collide(p.GetRectangle(), Rectangle { mx, my, 1, 1 })
+}
+
+func (b *Button) Hovered() bool {
+    mx, my := ebiten.CursorPosition()
+    
+    return Collide(b.GetRectangle(), Rectangle { mx, my, 1, 1 })
 }
 
 func Collide(r1 Rectangle, r2 Rectangle) bool {
@@ -173,10 +213,16 @@ func init() {
                          blocks = make([]Block, 0)
                      },
                      spritesheet.SubImage(image.Rect(0, 32, 16, 48)).(*ebiten.Image) }
+    
+    buttons = append(buttons, clear)
 }
 
 func (g *Game) Update() error {
     for _, v := range paletteItems {
+        v.Tick()
+    }
+    
+    for _, v := range buttons {
         v.Tick()
     }
     
@@ -221,6 +267,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
     }
     
     for _, b := range blocks {
+        b.Render(screen)
+    }
+    
+    for _, b := range buttons {
         b.Render(screen)
     }
 }
