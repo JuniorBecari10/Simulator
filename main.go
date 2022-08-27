@@ -80,10 +80,10 @@ func (b *Block) Tick() {
         case typeSand:
             if !ThereIsBlock(b.x, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
                 b.y += blockSize
-            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth {
+            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth && !ThereIsBlock(b.x + blockSize, b.y) {
                 b.x += blockSize
                 b.y += blockSize
-            } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x > 0 {
+            } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x > 0 && !ThereIsBlock(b.x - blockSize, b.y) {
                 b.x -= blockSize
                 b.y += blockSize
             }
@@ -172,8 +172,7 @@ func init() {
                      func() {
                          blocks = make([]Block, 0)
                      },
-                     spritesheet.SubImage(image.Rect(0, 32, 16, 48))
-                   }
+                     spritesheet.SubImage(image.Rect(0, 32, 16, 48)).(*ebiten.Image) }
 }
 
 func (g *Game) Update() error {
