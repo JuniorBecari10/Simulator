@@ -13,7 +13,7 @@ import (
 )
 
 const (
-    windowWidth int = 640
+    windowWidth int = 960
     windowHeight int = 580
     
     itemsLength int = 3 // 6
@@ -69,10 +69,10 @@ func (b *Block) Tick() {
         case typeSand:
             if !ThereIsBlock(b.x, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
                 b.y += blockSize
-            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
+            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth {
                 b.x += blockSize
                 b.y += blockSize
-            } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
+            } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x > 0 {
                 b.x -= blockSize
                 b.y += blockSize
             }
