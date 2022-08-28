@@ -8,7 +8,7 @@ Stone <br />
 Wood <br />
 Sand <br />
 Water <br />
-__Lava (not added)__ <br />
+_Lava (not added)_ <br />
 
 ## How to Play
 
