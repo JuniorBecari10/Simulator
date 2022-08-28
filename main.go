@@ -93,6 +93,11 @@ func (b *Block) Tick() {
                 b.y += blockSize
             }
             
+            if ThereIsBlock(b.x, b.y + blockSize) && GetBlock(b.x, b.y + blockSize).blockType == typeWater {
+                b.y += blockSize
+                GetBlock(b.x, b.y + blockSize).y -= blockSize
+            }
+            
             break
         case typeWater:
             if !ThereIsBlock(b.x, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
