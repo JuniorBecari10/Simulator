@@ -93,10 +93,10 @@ func (b *Block) Tick() {
                 b.y += blockSize
             }
             
-            if ThereIsBlock(b.x, b.y + blockSize) && GetBlock(b.x, b.y + blockSize).blockType == typeWater {
+            /*if ThereIsBlock(b.x, b.y + blockSize) && GetBlock(b.x, b.y + blockSize).blockType == typeWater {
                 b.y += blockSize
                 GetBlock(b.x, b.y + blockSize).y -= blockSize
-            }
+            }*/ 
             
             break
         case typeWater:
@@ -121,7 +121,6 @@ func (b *Button) Tick() {
         b.action()
     }
 }
-
 
 func (b *Button) Render(screen *ebiten.Image) {
     op := &ebiten.DrawImageOptions{}
@@ -179,6 +178,10 @@ func (p *PaletteItem) GetRectangle() Rectangle {
     return Rectangle { p.x, p.y, itemSize, itemSize }
 }
 
+func (b *Block) GetRectangle() Rectangle {
+    return Rectangle { b.x, b.y, blockSize, blockSize }
+}
+
 func (b *Button) GetRectangle() Rectangle {
     return Rectangle { b.x, b.y, itemSize, itemSize }
 }
@@ -190,6 +193,12 @@ func (p *PaletteItem) Hovered() bool {
 }
 
 func (b *Button) Hovered() bool {
+    mx, my := ebiten.CursorPosition()
+    
+    return Collide(b.GetRectangle(), Rectangle { mx, my, 1, 1 })
+}
+
+func (b *Block) Hovered() bool {
     mx, my := ebiten.CursorPosition()
     
     return Collide(b.GetRectangle(), Rectangle { mx, my, 1, 1 })
@@ -220,6 +229,10 @@ func GetBlock(x, y int) *Block {
     }
     
     return &Block {}
+}
+
+func remove(slice []Block, s int) []Block {
+    return append(slice[:s], slice[s+1:]...)
 }
 
 func init() {
@@ -284,6 +297,18 @@ func (g *Game) Update() error {
         }
         
         blocks = append(blocks, newblock)
+    }
+    
+    for i := range blocks {
+        if i >= len(blocks) {
+            break
+        }
+        
+        b := blocks[i]
+        
+        if b.Hovered() && ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
+            blocks = remove(blocks, i)
+        }
     }
     
     return nil
