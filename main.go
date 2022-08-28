@@ -64,7 +64,6 @@ type PaletteItem struct {
 type Block struct {
     x, y int
     blockType int
-    waterDirection bool
     sprite *ebiten.Image
 }
 
@@ -98,23 +97,14 @@ func (b *Block) Tick() {
         case typeWater:
             if !ThereIsBlock(b.x, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize {
                 b.y += blockSize
-            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth && !ThereIsBlock(b.x + blockSize, b.y) {
+            } else if !ThereIsBlock(b.x + blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x + blockSize < windowWidth && !ThereIsBlock(b.x + blockSize, b.y) { 
                 b.x += blockSize
                 b.y += blockSize
             } else if !ThereIsBlock(b.x - blockSize, b.y + blockSize) && b.y < windowHeight - paletteHeight - blockSize && b.x > 0 && !ThereIsBlock(b.x - blockSize, b.y) {
                 b.x -= blockSize
                 b.y += blockSize
-            }else if b.waterDirection {
+            } else if !ThereIsBlock(b.x + blockSize, b.y) && b.x + blockSize < windowWidth && !ThereIsBlock(b.x + blockSize, b.y) {
                 b.x += blockSize
-            } else if !b.waterDirection {
-                b.x -= blockSize
-            }
-            
-            if ThereIsBlock(b.x + blockSize, b.y) || b.x + blockSize >= windowWidth {
-                b.waterDirection = false
-            }
-            if !ThereIsBlock(b.x - blockSize, b.y) || b.x <= 0 {
-                b.waterDirection = true
             }
             
             break
@@ -217,6 +207,16 @@ func ThereIsBlock(x, y int) bool {
     return false
 }
 
+func GetBlock(x, y int) *Block {
+    for i := range blocks {
+        if blocks[i].x == x && blocks[i].y == y {
+            return &blocks[i]
+        }
+    }
+    
+    return &Block {}
+}
+
 func init() {
     var err error
     spritesheet, _, err = ebitenutil.NewImageFromFile("sprites.png")
@@ -272,7 +272,7 @@ func (g *Game) Update() error {
     if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) && my < windowHeight - paletteHeight {
         bx := int(math.Round(float64(mx / blockSize))) * blockSize
         by := int(math.Round(float64(my / blockSize))) * blockSize
-        newblock := Block { bx, by, selected, true, spritesheet.SubImage(image.Rect(selected * 16, 16, (selected * 16) + 16, 32)).(*ebiten.Image)}
+        newblock := Block { bx, by, selected, spritesheet.SubImage(image.Rect(selected * 16, 16, (selected * 16) + 16, 32)).(*ebiten.Image)}
         
         if ThereIsBlock(bx, by) {
             return nil

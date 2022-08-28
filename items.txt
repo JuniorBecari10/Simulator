@@ -1,5 +1,5 @@
-stone
-wood
-sand
-water
+stone x
+wood  x
+sand  x
+water x
 lava
